@@ -1,0 +1,49 @@
+﻿@model IEnumerable<WebApi.Models.RecipientViewModel>
+
+@{
+    ViewBag.Title = "RecipientIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>RecipientIndex</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateRecipient")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RecipientId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RecipientName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RecipientCountryId)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecipientId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecipientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecipientCountryId)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditRecipient", new { id = item.RecipientId.Trim() }, null) |
+
+                @Html.ActionLink("Delete", "DeleteRecipient", new { id = item.RecipientId.Trim() }, new { onclick = "return confirm('Are you sure?');" })
+            </td>
+        </tr>
+    }
+
+</table>
+<div>@ViewData["error"]</div>
+@Html.ActionLink("Return", "Index", "Invoice", null, null)

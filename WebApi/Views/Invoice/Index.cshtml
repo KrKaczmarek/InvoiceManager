@@ -1,0 +1,96 @@
+﻿@model IEnumerable<WebApi.Models.InvoiceViewModel>
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Show Employees", "EmployeeIndex", "Employee", null, null)      <span>  &nbsp; &nbsp; &nbsp; </span>
+    @Html.ActionLink("Show Ducks", "DuckIndex", "Duck", null, null)                  <span>  &nbsp; &nbsp; &nbsp; </span>
+    @Html.ActionLink("Show Recipients", "RecipientIndex", "Recipient", null, null)   <span>  &nbsp; &nbsp; &nbsp; </span>
+    @Html.ActionLink("Show Suppliers", "SupplierIndex", "Supplier", null, null)      <span>  &nbsp; &nbsp; &nbsp; </span>
+    @Html.ActionLink("Show Countries", "CountryIndex", "Country", null, null)        <span>  &emsp; &emsp; &emsp;&emsp; &emsp; &emsp;&emsp; &emsp; &emsp;&emsp; &emsp; &emsp;&emsp;&emsp; &emsp; &emsp;&emsp;&emsp;&emsp;&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp;&emsp; &emsp; &emsp; </span>
+    @Html.ActionLink("Log Off", "LogOff", "Login", null, null)
+</p>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<form asp-controller="Invoice" asp-action="Index" method="get">
+    <p>
+        <input type="text" name="SearchString">
+        <input type="submit" value="Filter" />
+        @Html.RadioButton("Answer", "EmployeeName", true) <span>EmployeeName</span>
+        @Html.RadioButton("Answer", "SupplierName") <span>SupplierName</span>
+        @Html.RadioButton("Answer", "RecipientName") <span>RecipientName</span>
+        @Html.RadioButton("Answer", "DuckType") <span>DuckType</span>
+
+    </p>
+</form>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.InvoiceId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Recipient.RecipientName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Supplier.SupplierName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Employee.EmployeeName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Duck.DuckType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvoiceId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Recipient.RecipientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supplier.SupplierName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Employee.EmployeeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duck.DuckType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.InvoiceId }) |
+
+                @Html.ActionLink("Delete", "Delete", new { id = item.InvoiceId }, new { onclick = "return confirm('Are you sure?');" })
+            </td>
+        </tr>
+    }
+    <tr>
+        <td>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        </td>
+    </tr>
+</table>

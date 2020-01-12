@@ -1,0 +1,464 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="SklepModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Dostawcy">
+          <Key>
+            <PropertyRef Name="Dostawca_id" />
+          </Key>
+          <Property Name="Dostawca_id" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="Dostawca_nazwa" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Kraj_id" Type="char" MaxLength="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Faktury">
+          <Key>
+            <PropertyRef Name="Faktura_id" />
+          </Key>
+          <Property Name="Faktura_id" Type="int" Nullable="false" />
+          <Property Name="Dostawca_id" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="Odbiorca_id" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="Pracownik_id" Type="int" Nullable="false" />
+          <Property Name="Kaczka_id" Type="int" Nullable="false" />
+          <Property Name="Ilosc" Type="int" Nullable="false" />
+          <Property Name="Data_wystawienia" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Kaczki">
+          <Key>
+            <PropertyRef Name="Kaczka_id" />
+          </Key>
+          <Property Name="Kaczka_id" Type="int" Nullable="false" />
+          <Property Name="Rodzaj" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Kraj_id" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="Cena" Type="money" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Kraje">
+          <Key>
+            <PropertyRef Name="Kraj_id" />
+          </Key>
+          <Property Name="Kraj_id" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="Kraj_nazwa" Type="varchar" MaxLength="40" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Odbiorcy">
+          <Key>
+            <PropertyRef Name="Odbiorca_id" />
+          </Key>
+          <Property Name="Odbiorca_id" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="Odbiorca_nazwa" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Kraj_id" Type="char" MaxLength="2" />
+        </EntityType>
+        <EntityType Name="Pracownicy">
+          <Key>
+            <PropertyRef Name="Pracownik_id" />
+          </Key>
+          <Property Name="Pracownik_id" Type="int" Nullable="false" />
+          <Property Name="Imie" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Nazwisko" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Plec" Type="varchar" MaxLength="1" Nullable="false" />
+          <Property Name="Pensja" Type="money" Nullable="false" />
+        </EntityType>
+        <Association Name="Dostawca_id_FK">
+          <End Role="Dostawcy" Type="Self.Dostawcy" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dostawcy">
+              <PropertyRef Name="Dostawca_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Dostawca_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kaczka_id_FK">
+          <End Role="Kaczki" Type="Self.Kaczki" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kaczki">
+              <PropertyRef Name="Kaczka_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Kaczka_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kraj_dostawcy_id_FK">
+          <End Role="Kraje" Type="Self.Kraje" Multiplicity="1" />
+          <End Role="Dostawcy" Type="Self.Dostawcy" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kraje">
+              <PropertyRef Name="Kraj_id" />
+            </Principal>
+            <Dependent Role="Dostawcy">
+              <PropertyRef Name="Kraj_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kraj_id_FK">
+          <End Role="Kraje" Type="Self.Kraje" Multiplicity="1" />
+          <End Role="Kaczki" Type="Self.Kaczki" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kraje">
+              <PropertyRef Name="Kraj_id" />
+            </Principal>
+            <Dependent Role="Kaczki">
+              <PropertyRef Name="Kraj_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kraj_odbiorcy_id_FK">
+          <End Role="Kraje" Type="Self.Kraje" Multiplicity="0..1" />
+          <End Role="Odbiorcy" Type="Self.Odbiorcy" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kraje">
+              <PropertyRef Name="Kraj_id" />
+            </Principal>
+            <Dependent Role="Odbiorcy">
+              <PropertyRef Name="Kraj_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Odbiorca_id_FK">
+          <End Role="Odbiorcy" Type="Self.Odbiorcy" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Odbiorcy">
+              <PropertyRef Name="Odbiorca_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Odbiorca_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Pracownik_id_FK">
+          <End Role="Pracownicy" Type="Self.Pracownicy" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Pracownicy">
+              <PropertyRef Name="Pracownik_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Pracownik_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SklepModelStoreContainer">
+          <EntitySet Name="Dostawcy" EntityType="Self.Dostawcy" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Faktury" EntityType="Self.Faktury" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Kaczki" EntityType="Self.Kaczki" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Kraje" EntityType="Self.Kraje" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Odbiorcy" EntityType="Self.Odbiorcy" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Pracownicy" EntityType="Self.Pracownicy" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="Dostawca_id_FK" Association="Self.Dostawca_id_FK">
+            <End Role="Dostawcy" EntitySet="Dostawcy" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+          <AssociationSet Name="Kaczka_id_FK" Association="Self.Kaczka_id_FK">
+            <End Role="Kaczki" EntitySet="Kaczki" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+          <AssociationSet Name="Kraj_dostawcy_id_FK" Association="Self.Kraj_dostawcy_id_FK">
+            <End Role="Kraje" EntitySet="Kraje" />
+            <End Role="Dostawcy" EntitySet="Dostawcy" />
+          </AssociationSet>
+          <AssociationSet Name="Kraj_id_FK" Association="Self.Kraj_id_FK">
+            <End Role="Kraje" EntitySet="Kraje" />
+            <End Role="Kaczki" EntitySet="Kaczki" />
+          </AssociationSet>
+          <AssociationSet Name="Kraj_odbiorcy_id_FK" Association="Self.Kraj_odbiorcy_id_FK">
+            <End Role="Kraje" EntitySet="Kraje" />
+            <End Role="Odbiorcy" EntitySet="Odbiorcy" />
+          </AssociationSet>
+          <AssociationSet Name="Odbiorca_id_FK" Association="Self.Odbiorca_id_FK">
+            <End Role="Odbiorcy" EntitySet="Odbiorcy" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+          <AssociationSet Name="Pracownik_id_FK" Association="Self.Pracownik_id_FK">
+            <End Role="Pracownicy" EntitySet="Pracownicy" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SklepModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Dostawcy">
+          <Key>
+            <PropertyRef Name="Dostawca_id" />
+          </Key>
+          <Property Name="Dostawca_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Dostawca_nazwa" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Kraj_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Faktury" Relationship="Self.Dostawca_id_FK" FromRole="Dostawcy" ToRole="Faktury" />
+          <NavigationProperty Name="Kraje" Relationship="Self.Kraj_dostawcy_id_FK" FromRole="Dostawcy" ToRole="Kraje" />
+        </EntityType>
+        <EntityType Name="Faktury">
+          <Key>
+            <PropertyRef Name="Faktura_id" />
+          </Key>
+          <Property Name="Faktura_id" Type="Int32" Nullable="false" />
+          <Property Name="Dostawca_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Odbiorca_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Pracownik_id" Type="Int32" Nullable="false" />
+          <Property Name="Kaczka_id" Type="Int32" Nullable="false" />
+          <Property Name="Ilosc" Type="Int32" Nullable="false" />
+          <Property Name="Data_wystawienia" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Dostawcy" Relationship="Self.Dostawca_id_FK" FromRole="Faktury" ToRole="Dostawcy" />
+          <NavigationProperty Name="Kaczki" Relationship="Self.Kaczka_id_FK" FromRole="Faktury" ToRole="Kaczki" />
+          <NavigationProperty Name="Odbiorcy" Relationship="Self.Odbiorca_id_FK" FromRole="Faktury" ToRole="Odbiorcy" />
+          <NavigationProperty Name="Pracownicy" Relationship="Self.Pracownik_id_FK" FromRole="Faktury" ToRole="Pracownicy" />
+        </EntityType>
+        <EntityType Name="Kaczki">
+          <Key>
+            <PropertyRef Name="Kaczka_id" />
+          </Key>
+          <Property Name="Kaczka_id" Type="Int32" Nullable="false" />
+          <Property Name="Rodzaj" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Kraj_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Cena" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <NavigationProperty Name="Faktury" Relationship="Self.Kaczka_id_FK" FromRole="Kaczki" ToRole="Faktury" />
+          <NavigationProperty Name="Kraje" Relationship="Self.Kraj_id_FK" FromRole="Kaczki" ToRole="Kraje" />
+        </EntityType>
+        <EntityType Name="Kraje">
+          <Key>
+            <PropertyRef Name="Kraj_id" />
+          </Key>
+          <Property Name="Kraj_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Kraj_nazwa" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Dostawcy" Relationship="Self.Kraj_dostawcy_id_FK" FromRole="Kraje" ToRole="Dostawcy" />
+          <NavigationProperty Name="Kaczki" Relationship="Self.Kraj_id_FK" FromRole="Kraje" ToRole="Kaczki" />
+          <NavigationProperty Name="Odbiorcy" Relationship="Self.Kraj_odbiorcy_id_FK" FromRole="Kraje" ToRole="Odbiorcy" />
+        </EntityType>
+        <EntityType Name="Odbiorcy">
+          <Key>
+            <PropertyRef Name="Odbiorca_id" />
+          </Key>
+          <Property Name="Odbiorca_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Odbiorca_nazwa" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Kraj_id" Type="String" MaxLength="2" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="Faktury" Relationship="Self.Odbiorca_id_FK" FromRole="Odbiorcy" ToRole="Faktury" />
+          <NavigationProperty Name="Kraje" Relationship="Self.Kraj_odbiorcy_id_FK" FromRole="Odbiorcy" ToRole="Kraje" />
+        </EntityType>
+        <EntityType Name="Pracownicy">
+          <Key>
+            <PropertyRef Name="Pracownik_id" />
+          </Key>
+          <Property Name="Pracownik_id" Type="Int32" Nullable="false" />
+          <Property Name="Imie" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Nazwisko" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Plec" Type="String" MaxLength="1" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Pensja" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <NavigationProperty Name="Faktury" Relationship="Self.Pracownik_id_FK" FromRole="Pracownicy" ToRole="Faktury" />
+        </EntityType>
+        <Association Name="Dostawca_id_FK">
+          <End Role="Dostawcy" Type="Self.Dostawcy" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dostawcy">
+              <PropertyRef Name="Dostawca_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Dostawca_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kraj_dostawcy_id_FK">
+          <End Role="Kraje" Type="Self.Kraje" Multiplicity="1" />
+          <End Role="Dostawcy" Type="Self.Dostawcy" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kraje">
+              <PropertyRef Name="Kraj_id" />
+            </Principal>
+            <Dependent Role="Dostawcy">
+              <PropertyRef Name="Kraj_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kaczka_id_FK">
+          <End Role="Kaczki" Type="Self.Kaczki" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kaczki">
+              <PropertyRef Name="Kaczka_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Kaczka_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Odbiorca_id_FK">
+          <End Role="Odbiorcy" Type="Self.Odbiorcy" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Odbiorcy">
+              <PropertyRef Name="Odbiorca_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Odbiorca_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Pracownik_id_FK">
+          <End Role="Pracownicy" Type="Self.Pracownicy" Multiplicity="1" />
+          <End Role="Faktury" Type="Self.Faktury" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Pracownicy">
+              <PropertyRef Name="Pracownik_id" />
+            </Principal>
+            <Dependent Role="Faktury">
+              <PropertyRef Name="Pracownik_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kraj_id_FK">
+          <End Role="Kraje" Type="Self.Kraje" Multiplicity="1" />
+          <End Role="Kaczki" Type="Self.Kaczki" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kraje">
+              <PropertyRef Name="Kraj_id" />
+            </Principal>
+            <Dependent Role="Kaczki">
+              <PropertyRef Name="Kraj_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Kraj_odbiorcy_id_FK">
+          <End Role="Kraje" Type="Self.Kraje" Multiplicity="0..1" />
+          <End Role="Odbiorcy" Type="Self.Odbiorcy" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Kraje">
+              <PropertyRef Name="Kraj_id" />
+            </Principal>
+            <Dependent Role="Odbiorcy">
+              <PropertyRef Name="Kraj_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SklepEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Dostawcy" EntityType="Self.Dostawcy" />
+          <EntitySet Name="Faktury" EntityType="Self.Faktury" />
+          <EntitySet Name="Kaczki" EntityType="Self.Kaczki" />
+          <EntitySet Name="Kraje" EntityType="Self.Kraje" />
+          <EntitySet Name="Odbiorcy" EntityType="Self.Odbiorcy" />
+          <EntitySet Name="Pracownicy" EntityType="Self.Pracownicy" />
+          <AssociationSet Name="Dostawca_id_FK" Association="Self.Dostawca_id_FK">
+            <End Role="Dostawcy" EntitySet="Dostawcy" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+          <AssociationSet Name="Kraj_dostawcy_id_FK" Association="Self.Kraj_dostawcy_id_FK">
+            <End Role="Kraje" EntitySet="Kraje" />
+            <End Role="Dostawcy" EntitySet="Dostawcy" />
+          </AssociationSet>
+          <AssociationSet Name="Kaczka_id_FK" Association="Self.Kaczka_id_FK">
+            <End Role="Kaczki" EntitySet="Kaczki" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+          <AssociationSet Name="Odbiorca_id_FK" Association="Self.Odbiorca_id_FK">
+            <End Role="Odbiorcy" EntitySet="Odbiorcy" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+          <AssociationSet Name="Pracownik_id_FK" Association="Self.Pracownik_id_FK">
+            <End Role="Pracownicy" EntitySet="Pracownicy" />
+            <End Role="Faktury" EntitySet="Faktury" />
+          </AssociationSet>
+          <AssociationSet Name="Kraj_id_FK" Association="Self.Kraj_id_FK">
+            <End Role="Kraje" EntitySet="Kraje" />
+            <End Role="Kaczki" EntitySet="Kaczki" />
+          </AssociationSet>
+          <AssociationSet Name="Kraj_odbiorcy_id_FK" Association="Self.Kraj_odbiorcy_id_FK">
+            <End Role="Kraje" EntitySet="Kraje" />
+            <End Role="Odbiorcy" EntitySet="Odbiorcy" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SklepModelStoreContainer" CdmEntityContainer="SklepEntities">
+          <EntitySetMapping Name="Dostawcy">
+            <EntityTypeMapping TypeName="SklepModel.Dostawcy">
+              <MappingFragment StoreEntitySet="Dostawcy">
+                <ScalarProperty Name="Dostawca_id" ColumnName="Dostawca_id" />
+                <ScalarProperty Name="Dostawca_nazwa" ColumnName="Dostawca_nazwa" />
+                <ScalarProperty Name="Kraj_id" ColumnName="Kraj_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Faktury">
+            <EntityTypeMapping TypeName="SklepModel.Faktury">
+              <MappingFragment StoreEntitySet="Faktury">
+                <ScalarProperty Name="Faktura_id" ColumnName="Faktura_id" />
+                <ScalarProperty Name="Dostawca_id" ColumnName="Dostawca_id" />
+                <ScalarProperty Name="Odbiorca_id" ColumnName="Odbiorca_id" />
+                <ScalarProperty Name="Pracownik_id" ColumnName="Pracownik_id" />
+                <ScalarProperty Name="Kaczka_id" ColumnName="Kaczka_id" />
+                <ScalarProperty Name="Ilosc" ColumnName="Ilosc" />
+                <ScalarProperty Name="Data_wystawienia" ColumnName="Data_wystawienia" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Kaczki">
+            <EntityTypeMapping TypeName="SklepModel.Kaczki">
+              <MappingFragment StoreEntitySet="Kaczki">
+                <ScalarProperty Name="Kaczka_id" ColumnName="Kaczka_id" />
+                <ScalarProperty Name="Rodzaj" ColumnName="Rodzaj" />
+                <ScalarProperty Name="Kraj_id" ColumnName="Kraj_id" />
+                <ScalarProperty Name="Cena" ColumnName="Cena" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Kraje">
+            <EntityTypeMapping TypeName="SklepModel.Kraje">
+              <MappingFragment StoreEntitySet="Kraje">
+                <ScalarProperty Name="Kraj_id" ColumnName="Kraj_id" />
+                <ScalarProperty Name="Kraj_nazwa" ColumnName="Kraj_nazwa" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Odbiorcy">
+            <EntityTypeMapping TypeName="SklepModel.Odbiorcy">
+              <MappingFragment StoreEntitySet="Odbiorcy">
+                <ScalarProperty Name="Odbiorca_id" ColumnName="Odbiorca_id" />
+                <ScalarProperty Name="Odbiorca_nazwa" ColumnName="Odbiorca_nazwa" />
+                <ScalarProperty Name="Kraj_id" ColumnName="Kraj_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Pracownicy">
+            <EntityTypeMapping TypeName="SklepModel.Pracownicy">
+              <MappingFragment StoreEntitySet="Pracownicy">
+                <ScalarProperty Name="Pracownik_id" ColumnName="Pracownik_id" />
+                <ScalarProperty Name="Imie" ColumnName="Imie" />
+                <ScalarProperty Name="Nazwisko" ColumnName="Nazwisko" />
+                <ScalarProperty Name="Plec" ColumnName="Plec" />
+                <ScalarProperty Name="Pensja" ColumnName="Pensja" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

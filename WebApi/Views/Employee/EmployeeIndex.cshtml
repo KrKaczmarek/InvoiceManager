@@ -1,0 +1,61 @@
+﻿@model IEnumerable<WebApi.Models.EmployeeViewModel>
+
+@{
+    ViewBag.Title = "EmployeeIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EmployeeIndex</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateEmployee")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.EmployeeId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmployeeName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmployeeSurname)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmployeeSalary)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Gender)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeSurname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeSalary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gender)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditEmployee", new {  id=item.EmployeeId  }) |
+      
+                @Html.ActionLink("Delete", "DeleteEmployee", new {  id=item.EmployeeId }, new { onclick = "return confirm('Are you sure?');" })
+            </td>
+        </tr>
+    }
+ 
+</table>
+<div>@ViewData["error"]</div>
+@Html.ActionLink("Return", "Index", "Invoice", null, null)

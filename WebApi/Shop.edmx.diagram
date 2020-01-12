@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="05dd7ebd495445a0aff1970b3b076d76" Name="Diagram1">
+        <EntityTypeShape EntityType="SklepModel.Dostawcy" Width="1.5" PointX="3" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="SklepModel.Faktury" Width="1.5" PointX="5.25" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="SklepModel.Kaczki" Width="1.5" PointX="3" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="SklepModel.Kraje" Width="1.5" PointX="0.75" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="SklepModel.Odbiorcy" Width="1.5" PointX="3" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="SklepModel.Pracownicy" Width="1.5" PointX="3" PointY="11.625" IsExpanded="true" />
+        <AssociationConnector Association="SklepModel.Dostawca_id_FK" ManuallyRouted="false" />
+        <AssociationConnector Association="SklepModel.Kraj_dostawcy_id_FK" ManuallyRouted="false" />
+        <AssociationConnector Association="SklepModel.Kaczka_id_FK" ManuallyRouted="false" />
+        <AssociationConnector Association="SklepModel.Odbiorca_id_FK" ManuallyRouted="false" />
+        <AssociationConnector Association="SklepModel.Pracownik_id_FK" ManuallyRouted="false" />
+        <AssociationConnector Association="SklepModel.Kraj_id_FK" ManuallyRouted="false" />
+        <AssociationConnector Association="SklepModel.Kraj_odbiorcy_id_FK" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

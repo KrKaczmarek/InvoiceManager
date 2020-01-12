@@ -1,0 +1,50 @@
+﻿@model IEnumerable<WebApi.Models.SupplierViewModel>
+
+@{
+    ViewBag.Title = "SupplierIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>SupplierIndex</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateSupplier")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.SupplierId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SupplierName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SupplierCountryId)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SupplierId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SupplierName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SupplierCountryId)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditSupplier", new { id = item.SupplierId.Trim() }) |
+
+                @Html.ActionLink("Delete", "DeleteSupplier", new { id = item.SupplierId.Trim() }, new { onclick = "return confirm('Are you sure?');" })
+            </td>
+        </tr>
+
+    }
+
+</table>
+<div>@ViewData["error"]</div>
+@Html.ActionLink("Return", "Index", "Invoice", null, null)
