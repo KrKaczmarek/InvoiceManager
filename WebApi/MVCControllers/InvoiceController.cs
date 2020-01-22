@@ -8,6 +8,7 @@ using WebApi.Models;
 
 namespace WebApi.MVCControllers
 {
+  
     public class InvoiceController : Controller
     {
        
@@ -226,6 +227,9 @@ namespace WebApi.MVCControllers
 
             return RedirectToAction("Index");
         }
-
+        public ActionResult UnAuthorized()
+        {           
+            return View();
+        }
     }
 }

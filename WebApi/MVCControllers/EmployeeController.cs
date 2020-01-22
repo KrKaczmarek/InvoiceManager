@@ -73,12 +73,7 @@ namespace WebApi.MVCControllers
             return View(employee);
         }
        
-        public ActionResult UnAuthorized()
-        {
-            TempData["error"] = "Un Authorized!";
-
-            return RedirectToAction("EmployeeIndex");
-        }
+       
 
         [MyAuthorization("Haffaz")]
         public ActionResult EditEmployee(int id)

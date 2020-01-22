@@ -1,4 +1,5 @@
-# WebApi
-MVC RESTful project: shop selling ducks with database CRUD and login
+# Invoice Manager
+MVC RESTful project: Invoice Manager for a shop that sells ducks.
+Database CRUD, custom authorization with cookies.
 # Prerequisites
 Sql server

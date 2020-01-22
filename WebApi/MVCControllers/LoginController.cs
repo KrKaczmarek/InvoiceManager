@@ -43,7 +43,7 @@ namespace WebApi.MVCControllers
         {
             HttpCookie cookie = Request.Cookies["LoginCookie"];
             cookie.Expires = DateTime.Now.AddYears(-1);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Login");
         }
         public bool ValidateUser(UserLoginViewModel user)
         {
