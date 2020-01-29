@@ -31,5 +31,6 @@ namespace WebApi
         public virtual DbSet<Kraje> Kraje { get; set; }
         public virtual DbSet<Odbiorcy> Odbiorcy { get; set; }
         public virtual DbSet<Pracownicy> Pracownicy { get; set; }
+        public virtual DbSet<Uzytkownicy> Uzytkownicy { get; set; }
     }
 }

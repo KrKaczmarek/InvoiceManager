@@ -11,26 +11,26 @@ namespace WebApi.Models
 {
     public class MyAuthorizationAttribute:AuthorizeAttribute
     {
-        private readonly string[] allowedUsers;
-        public MyAuthorizationAttribute(params string[] users)
+        private readonly string[] allowedRoles;
+        public MyAuthorizationAttribute(params string[] roles)
         {
-            allowedUsers = users;
+            allowedRoles = roles;
         }
         
 
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
             bool authorize = false;
-            string id;
+            string[] cookieData;
             HttpCookie cookie = HttpContext.Current.Request.Cookies["LoginCookie"];
             
             if (cookie != null)
             {
                 FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
-                id=authTicket.UserData;
-                foreach(var i in allowedUsers)
+                cookieData = authTicket.UserData.Split(' ');
+                foreach(var i in allowedRoles)
                 {
-                    if (i == id)
+                    if (i == cookieData[1])
                         authorize= true;
                 }
                

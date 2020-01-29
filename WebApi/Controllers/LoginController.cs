@@ -15,10 +15,11 @@ namespace WebApi.Controllers
             IList<UserLoginViewModel> Users = null;
             using (var ctx = new SklepEntities())
             {
-                Users = ctx.Pracownicy.Include("Pracownik_id").Select(I => new UserLoginViewModel()
+                Users = ctx.Uzytkownicy.Include("Uzytkownik_id").Select(I => new UserLoginViewModel()
                 {                  
-                    UserName = I.Imie,
-                    UserPassword = I.Nazwisko,
+                    UserName = I.Uzytkownik_nazwa,
+                    UserPassword = I.Uzytkownik_haslo,
+                    UserRole= I.Rola,
                
                 }).ToList();
             }          

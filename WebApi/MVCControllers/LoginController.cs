@@ -22,7 +22,8 @@ namespace WebApi.MVCControllers
         {
             if (ValidateUser(user))
             {
-                string userData = user.UserName;
+                var tempUser=Users.SingleOrDefault(U => U.UserName == user.UserName);
+                string userData = user.UserName +" "+ tempUser.UserRole;
                 FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket
                        (
                        1, user.UserName, DateTime.Now, DateTime.Now.AddMinutes(15), false, userData

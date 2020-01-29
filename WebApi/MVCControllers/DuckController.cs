@@ -8,6 +8,7 @@ using WebApi.Models;
 
 namespace WebApi.MVCControllers
 {
+    [MyAuthorization("Admin", "Pracownik")]
     public class DuckController : Controller
     {
         IEnumerable<DuckViewModel> Ducks;

@@ -224,6 +224,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Shop.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Uzytkownicy.cs">
+      <DependentUpon>Shop.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />

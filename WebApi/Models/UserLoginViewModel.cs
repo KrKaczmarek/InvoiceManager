@@ -15,6 +15,10 @@ namespace WebApi.Models
         [Required(ErrorMessage = "Cannot be empty.Try Aladeen or Green")]      
         [StringLength(50, MinimumLength = 1, ErrorMessage = "Max 50 characters")]
         public string UserPassword { get; set; }
-        
+
+        public string UserRole { get; set; }
+
+
+
     }
 }

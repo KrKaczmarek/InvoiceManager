@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="SklepModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="SklepModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Dostawcy">
           <Key>
             <PropertyRef Name="Dostawca_id" />
@@ -58,6 +58,15 @@
           <Property Name="Nazwisko" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="Plec" Type="varchar" MaxLength="1" Nullable="false" />
           <Property Name="Pensja" Type="money" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Uzytkownicy">
+          <Key>
+            <PropertyRef Name="Uzytkownik_id" />
+          </Key>
+          <Property Name="Uzytkownik_id" Type="int" Nullable="false" />
+          <Property Name="Uzytkownik_nazwa" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Uzytkownik_haslo" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Rola" Type="varchar" MaxLength="30" Nullable="false" />
         </EntityType>
         <Association Name="Dostawca_id_FK">
           <End Role="Dostawcy" Type="Self.Dostawcy" Multiplicity="1" />
@@ -150,6 +159,7 @@
           <EntitySet Name="Kraje" EntityType="Self.Kraje" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Odbiorcy" EntityType="Self.Odbiorcy" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Pracownicy" EntityType="Self.Pracownicy" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Uzytkownicy" EntityType="Self.Uzytkownicy" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="Dostawca_id_FK" Association="Self.Dostawca_id_FK">
             <End Role="Dostawcy" EntitySet="Dostawcy" />
             <End Role="Faktury" EntitySet="Faktury" />
@@ -179,8 +189,7 @@
             <End Role="Faktury" EntitySet="Faktury" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SklepModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -371,7 +380,17 @@
             <End Role="Kraje" EntitySet="Kraje" />
             <End Role="Odbiorcy" EntitySet="Odbiorcy" />
           </AssociationSet>
+          <EntitySet Name="Uzytkownicy" EntityType="SklepModel.Uzytkownicy" />
         </EntityContainer>
+        <EntityType Name="Uzytkownicy">
+          <Key>
+            <PropertyRef Name="Uzytkownik_id" />
+          </Key>
+          <Property Name="Uzytkownik_id" Type="Int32" Nullable="false" />
+          <Property Name="Uzytkownik_nazwa" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Uzytkownik_haslo" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Rola" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -435,6 +454,16 @@
                 <ScalarProperty Name="Nazwisko" ColumnName="Nazwisko" />
                 <ScalarProperty Name="Plec" ColumnName="Plec" />
                 <ScalarProperty Name="Pensja" ColumnName="Pensja" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Uzytkownicy">
+            <EntityTypeMapping TypeName="SklepModel.Uzytkownicy">
+              <MappingFragment StoreEntitySet="Uzytkownicy">
+                <ScalarProperty Name="Rola" ColumnName="Rola" />
+                <ScalarProperty Name="Uzytkownik_haslo" ColumnName="Uzytkownik_haslo" />
+                <ScalarProperty Name="Uzytkownik_nazwa" ColumnName="Uzytkownik_nazwa" />
+                <ScalarProperty Name="Uzytkownik_id" ColumnName="Uzytkownik_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

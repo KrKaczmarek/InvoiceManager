@@ -8,6 +8,7 @@ using WebApi.Models;
 
 namespace WebApi.MVCControllers
 {
+    [MyAuthorization("Admin")]
     public class EmployeeController : Controller
     {
         IEnumerable<EmployeeViewModel> Employees;
@@ -38,19 +39,18 @@ namespace WebApi.MVCControllers
                     Employees = Enumerable.Empty<EmployeeViewModel>();
                     ModelState.AddModelError(string.Empty, "No employees in db");
                 }
-                ViewData["error"] = TempData["error"];
+                
                 return View(Employees);
             }
         }
-        [MyAuthorization("Haffaz")]
+        
         public ActionResult CreateEmployee()
         {
             Employee.EmployeeId = WebApi.Controllers.EmployeeController.NextEmployeeIndex;
             return View(Employee);
 
         }
-        [HttpPost]
-        [MyAuthorization("Haffaz")]
+        [HttpPost]       
         public ActionResult CreateEmployee(EmployeeViewModel employee)
         {
             employee.EmployeeId =  WebApi.Controllers.EmployeeController.NextEmployeeIndex;
@@ -74,8 +74,7 @@ namespace WebApi.MVCControllers
         }
        
        
-
-        [MyAuthorization("Haffaz")]
+        
         public ActionResult EditEmployee(int id)
         {
             IEnumerable<EmployeeViewModel> employee = null;
@@ -121,7 +120,7 @@ namespace WebApi.MVCControllers
             }
             return View(employee);
         }
-        [MyAuthorization("Haffaz")]
+        
         public ActionResult DeleteEmployee(int id)
         {
             using (var client = new HttpClient())
