@@ -10,10 +10,10 @@ namespace WebApi.Models
     {
         public int EmployeeId { get; set; }
         [Required(ErrorMessage = "Cannot be empty")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Max 50 characters")]
+        [StringLength(40, MinimumLength = 1, ErrorMessage = "Max 40 characters")]
         public string EmployeeName { get; set; }
         [Required(ErrorMessage = "Cannot be empty")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Max 50 characters")]
+        [StringLength(40, MinimumLength = 1, ErrorMessage = "Max 40 characters")]
         public string EmployeeSurname { get; set; }
 
         [Required(ErrorMessage = "Cannot be empty")]

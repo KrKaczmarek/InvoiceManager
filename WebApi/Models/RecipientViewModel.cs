@@ -14,7 +14,7 @@ namespace WebApi.Models
         public string RecipientId { get; set; }
 
         [Required(ErrorMessage = "Cannot be empty")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Max 50 characters")]
+        [StringLength(40, MinimumLength = 1, ErrorMessage = "Max 40 characters")]
         public string RecipientName { get; set; }
         [Required(ErrorMessage = "Cannot be empty")]
         public string RecipientCountryId { get; set; }

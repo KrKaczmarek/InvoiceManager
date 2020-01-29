@@ -13,7 +13,7 @@ namespace WebApi.Models
         [StringLength(2, MinimumLength = 1, ErrorMessage = "Max 2 characters")]
         public string SupplierId { get; set; }
         [Required(ErrorMessage = "Cannot be empty")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Max 50 characters")]
+        [StringLength(40, MinimumLength = 1, ErrorMessage = "Max 40 characters")]
         public string SupplierName { get; set; }
         [Required(ErrorMessage = "Cannot be empty")]
         public string SupplierCountryId { get; set; }

@@ -11,7 +11,7 @@ namespace WebApi.Models
     {
         public int DuckId { get; set; }
         [Required(ErrorMessage = "Cannot be empty")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Max 50 characters")]
+        [StringLength(40, MinimumLength = 1, ErrorMessage = "Max 40 characters")]
         public string DuckType { get; set; }
         [Required(ErrorMessage = "Cannot be empty")]
         [Range(0,int.MaxValue, ErrorMessage = "Must be >0")]
