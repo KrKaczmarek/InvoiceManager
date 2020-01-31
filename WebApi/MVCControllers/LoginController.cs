@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -11,6 +12,8 @@ namespace WebApi.MVCControllers
 {
     public class LoginController : Controller
     {
+        private Logger logger = LogManager.GetCurrentClassLogger();
+        
         IEnumerable<UserLoginViewModel> Users { get; set; }
        
         public ActionResult Login()
@@ -24,26 +27,20 @@ namespace WebApi.MVCControllers
             {
                 var tempUser=Users.SingleOrDefault(U => U.UserName == user.UserName);
                 string userData = user.UserName +" "+ tempUser.UserRole;
-                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket
-                       (
-                       1, user.UserName, DateTime.Now, DateTime.Now.AddMinutes(15), false, userData
-                       );
-                
-                string enTicket = FormsAuthentication.Encrypt(authTicket);
-               
-                HttpCookie faCookie = new HttpCookie("LoginCookie", enTicket);
-                Response.Cookies.Add(faCookie);
-
+                CookieHandler.CreateCookie(user.UserName, userData, "LoginCookie");
+                logger.Info(Environment.NewLine+"User logged in: " +user.UserName+" "+ DateTime.Now);
                 return RedirectToAction("Index", "Invoice");
             }
+            logger.Warn(Environment.NewLine + "Login failure " + DateTime.Now);
             ModelState.AddModelError("Login", "Incorrect login or password");
             return View(user);
         }
         
         public ActionResult LogOff()
-        {
-            HttpCookie cookie = Request.Cookies["LoginCookie"];
-            cookie.Expires = DateTime.Now.AddYears(-1);
+        {            
+            logger.Info(Environment.NewLine + "User logged out: " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+
+            CookieHandler.DeleteCookie("LoginCookie");
             return RedirectToAction("Login", "Login");
         }
         public bool ValidateUser(UserLoginViewModel user)

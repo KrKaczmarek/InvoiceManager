@@ -13,6 +13,19 @@
           <Property Name="Dostawca_nazwa" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="Kraj_id" Type="char" MaxLength="2" Nullable="false" />
         </EntityType>
+        <EntityType Name="exceptionlog">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="timestamp" Type="datetime" Nullable="false" />
+          <Property Name="level" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="logger" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="message" Type="varchar" MaxLength="3600" Nullable="false" />
+          <Property Name="userid" Type="int" />
+          <Property Name="exception" Type="varchar" MaxLength="3600" />
+          <Property Name="stacktrace" Type="varchar" MaxLength="3600" />
+        </EntityType>
         <EntityType Name="Faktury">
           <Key>
             <PropertyRef Name="Faktura_id" />
@@ -154,6 +167,7 @@
         </Association>
         <EntityContainer Name="SklepModelStoreContainer">
           <EntitySet Name="Dostawcy" EntityType="Self.Dostawcy" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="exceptionlog" EntityType="Self.exceptionlog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Faktury" EntityType="Self.Faktury" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Kaczki" EntityType="Self.Kaczki" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Kraje" EntityType="Self.Kraje" Schema="dbo" store:Type="Tables" />
@@ -381,6 +395,7 @@
             <End Role="Odbiorcy" EntitySet="Odbiorcy" />
           </AssociationSet>
           <EntitySet Name="Uzytkownicy" EntityType="SklepModel.Uzytkownicy" />
+          <EntitySet Name="exceptionlog" EntityType="SklepModel.exceptionlog" />
         </EntityContainer>
         <EntityType Name="Uzytkownicy">
           <Key>
@@ -390,6 +405,19 @@
           <Property Name="Uzytkownik_nazwa" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Uzytkownik_haslo" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="Rola" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="exceptionlog">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="level" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="logger" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="message" Type="String" Nullable="false" MaxLength="3600" FixedLength="false" Unicode="false" />
+          <Property Name="userid" Type="Int32" />
+          <Property Name="exception" Type="String" MaxLength="3600" FixedLength="false" Unicode="false" />
+          <Property Name="stacktrace" Type="String" MaxLength="3600" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -464,6 +492,20 @@
                 <ScalarProperty Name="Uzytkownik_haslo" ColumnName="Uzytkownik_haslo" />
                 <ScalarProperty Name="Uzytkownik_nazwa" ColumnName="Uzytkownik_nazwa" />
                 <ScalarProperty Name="Uzytkownik_id" ColumnName="Uzytkownik_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="exceptionlog">
+            <EntityTypeMapping TypeName="SklepModel.exceptionlog">
+              <MappingFragment StoreEntitySet="exceptionlog">
+                <ScalarProperty Name="stacktrace" ColumnName="stacktrace" />
+                <ScalarProperty Name="exception" ColumnName="exception" />
+                <ScalarProperty Name="userid" ColumnName="userid" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="logger" ColumnName="logger" />
+                <ScalarProperty Name="level" ColumnName="level" />
+                <ScalarProperty Name="timestamp" ColumnName="timestamp" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

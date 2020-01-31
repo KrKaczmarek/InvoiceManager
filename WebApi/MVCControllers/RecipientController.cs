@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -11,7 +12,8 @@ namespace WebApi.MVCControllers
     [MyAuthorization("Admin", "Pracownik")]
     public class RecipientController : Controller
     {
-       
+        private Logger logger = LogManager.GetCurrentClassLogger();
+
         IEnumerable<RecipientViewModel> Recipients;
         RecipientViewModel Recipient = new RecipientViewModel();
         public ActionResult RecipientIndex()
@@ -67,6 +69,8 @@ namespace WebApi.MVCControllers
                 var result = postTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Recipient " + recipient.RecipientId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+
                     return RedirectToAction("RecipientIndex");
                 }
             }
@@ -137,7 +141,7 @@ namespace WebApi.MVCControllers
                 var result = putTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
-
+                    logger.Info(Environment.NewLine + "Recipient " + recipient.RecipientId+ " editted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
                     return RedirectToAction("RecipientIndex");
                 }
             }
@@ -158,7 +162,7 @@ namespace WebApi.MVCControllers
                 var result = deleteTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
-
+                    logger.Info(Environment.NewLine + "Recipient " + id + " deleted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
                     return RedirectToAction("RecipientIndex");
                 }
             }

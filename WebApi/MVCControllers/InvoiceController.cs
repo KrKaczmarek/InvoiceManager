@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -8,12 +9,12 @@ using WebApi.Models;
 
 namespace WebApi.MVCControllers
 {
-    [MyAuthorization("Admin","Pracownik")]
+    [MyAuthorization("Admin", "Pracownik")]
     public class InvoiceController : Controller
     {
-       
+        private Logger logger = LogManager.GetCurrentClassLogger();
         IEnumerable<InvoiceViewModel> Invoices { get; set; }
-      
+
         CreateViewModel create = new CreateViewModel();
         public ActionResult Index(string searchString = "", string Answer = "")
         {
@@ -53,7 +54,7 @@ namespace WebApi.MVCControllers
                 }
             }
 
-         
+
             return View(Invoices);
 
         }
@@ -132,25 +133,26 @@ namespace WebApi.MVCControllers
         [HttpPost]
         public ActionResult Create(CreateViewModel create)
         {
-          
-                this.create = create;
-                using (var client = new HttpClient())
+
+            this.create = create;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
+                var postTask = client.PostAsJsonAsync("api/invoice", create.Invoice);
+                postTask.Wait();
+
+                var result = postTask.Result;
+                if (result.IsSuccessStatusCode)
                 {
-                    client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-                    var postTask = client.PostAsJsonAsync("api/invoice", create.Invoice);
-                    postTask.Wait();
+                    logger.Info(Environment.NewLine+ "Invoice "+ create.Invoice.InvoiceId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+                    return RedirectToAction("Index");
+                }
 
-                    var result = postTask.Result;
-                    if (result.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("Index");
-                    }
 
-              
             }
             PopulateList();
             ModelState.AddModelError(string.Empty, "Server Error.");
-
+       
 
             return View(create);
         }
@@ -178,16 +180,16 @@ namespace WebApi.MVCControllers
                 }
             }
             create.Invoice = invoice.SingleOrDefault();
-         
+
             return View(create);
         }
 
-    
+
 
         [HttpPost]
         public ActionResult Edit(CreateViewModel create)
         {
-         
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
@@ -199,7 +201,8 @@ namespace WebApi.MVCControllers
                 var result = putTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
-                  
+                    logger.Info(Environment.NewLine + "Invoice " + create.Invoice.InvoiceId.ToString() + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+
                     return RedirectToAction("Index");
                 }
             }
@@ -220,6 +223,7 @@ namespace WebApi.MVCControllers
                 var result = deleteTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Invoice " + id.ToString() + " deleted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
 
                     return RedirectToAction("Index");
                 }
@@ -228,7 +232,7 @@ namespace WebApi.MVCControllers
             return RedirectToAction("Index");
         }
         public ActionResult UnAuthorized()
-        {           
+        {
             return View();
         }
     }

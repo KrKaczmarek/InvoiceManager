@@ -32,5 +32,6 @@ namespace WebApi
         public virtual DbSet<Odbiorcy> Odbiorcy { get; set; }
         public virtual DbSet<Pracownicy> Pracownicy { get; set; }
         public virtual DbSet<Uzytkownicy> Uzytkownicy { get; set; }
+        public virtual DbSet<exceptionlog> exceptionlog { get; set; }
     }
 }

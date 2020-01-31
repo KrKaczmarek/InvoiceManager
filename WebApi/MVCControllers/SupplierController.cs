@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -11,7 +12,7 @@ namespace WebApi.MVCControllers
     [MyAuthorization("Admin", "Pracownik")]
     public class SupplierController : Controller
     {
-       
+        private Logger logger = LogManager.GetCurrentClassLogger();
         IEnumerable<SupplierViewModel> Suppliers;
         SupplierViewModel Supplier=new SupplierViewModel();
         public ActionResult SupplierIndex()
@@ -85,6 +86,8 @@ namespace WebApi.MVCControllers
                 var result = postTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Supplier " + supplier.SupplierId + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+
                     return RedirectToAction("SupplierIndex");
                 }
             }
@@ -134,6 +137,7 @@ namespace WebApi.MVCControllers
                 var result = putTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Recipient " + supplier.SupplierId + " idited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
 
                     return RedirectToAction("SupplierIndex");
                 }
@@ -155,6 +159,7 @@ namespace WebApi.MVCControllers
                 var result = deleteTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Supplier" + id + " deleted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
 
                     return RedirectToAction("SupplierIndex");
                 }

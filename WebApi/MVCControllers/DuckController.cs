@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -11,6 +12,7 @@ namespace WebApi.MVCControllers
     [MyAuthorization("Admin", "Pracownik")]
     public class DuckController : Controller
     {
+        private Logger logger = LogManager.GetCurrentClassLogger();
         IEnumerable<DuckViewModel> Ducks;
         DuckViewModel Duck = new DuckViewModel();
         public ActionResult DuckIndex()
@@ -86,6 +88,8 @@ namespace WebApi.MVCControllers
                 var result = postTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Duck" + duck.DuckId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+
                     return RedirectToAction("DuckIndex");
                 }
             }
@@ -138,6 +142,7 @@ namespace WebApi.MVCControllers
                 var result = putTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Duck" + duck.DuckId.ToString() + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
 
                     return RedirectToAction("DuckIndex");
                 }
@@ -159,6 +164,7 @@ namespace WebApi.MVCControllers
                 var result = deleteTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Duck" + id.ToString() + " deleted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
 
                     return RedirectToAction("DuckIndex");
                 }
