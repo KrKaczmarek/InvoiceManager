@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -11,6 +12,7 @@ namespace WebApi.MVCControllers
     [MyAuthorization("Admin", "Pracownik")]
     public class CountryController : Controller
     {
+        private Logger logger = LogManager.GetCurrentClassLogger();
         IEnumerable<CountryViewModel> Countries;       
         public ActionResult CountryIndex()
         {
@@ -58,6 +60,7 @@ namespace WebApi.MVCControllers
                 var result = postTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    logger.Info(Environment.NewLine + "Country" + country.CountryId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
                     return RedirectToAction("CountryIndex");
                 }
             }
@@ -84,7 +87,6 @@ namespace WebApi.MVCControllers
                 {
                     var readTask = result.Content.ReadAsAsync<IList<CountryViewModel>>();
                     readTask.Wait();
-
                     country = readTask.Result;
                 }
             }
@@ -106,7 +108,7 @@ namespace WebApi.MVCControllers
                 var result = putTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
-
+                    logger.Info(Environment.NewLine + "Country" + country.CountryId.ToString() + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
                     return RedirectToAction("CountryIndex");
                 }
             }
@@ -126,7 +128,7 @@ namespace WebApi.MVCControllers
                 var result = deleteTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
-
+                    logger.Info(Environment.NewLine + "Country" + id.ToString() + " deleted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
                     return RedirectToAction("CountryIndex");
                 }
             }

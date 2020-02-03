@@ -28,14 +28,14 @@ namespace WebApi.Models
 
         public static string GetUserNameFromCookie(string cookieName)
         {
-             HttpCookie cookie = HttpContext.Current.Request.Cookies["LoginCookie"];
+             HttpCookie cookie = HttpContext.Current.Request.Cookies[cookieName];
             FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
             string[] cookieData = authTicket.UserData.Split(' ');
             return cookieData[0];
         }
         public static string GetUserRoleFromCookie(string cookieName)
         {
-            HttpCookie cookie = HttpContext.Current.Request.Cookies["LoginCookie"];
+            HttpCookie cookie = HttpContext.Current.Request.Cookies[cookieName];
             FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
             string[] cookieData = authTicket.UserData.Split(' ');
 
