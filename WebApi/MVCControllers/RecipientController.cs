@@ -1,6 +1,7 @@
 ﻿using NLog;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Web;
@@ -14,7 +15,7 @@ namespace WebApi.MVCControllers
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
 
-        IEnumerable<RecipientViewModel> Recipients;
+        static IEnumerable<RecipientViewModel> Recipients;
         RecipientViewModel Recipient = new RecipientViewModel();
         public ActionResult RecipientIndex()
         {
@@ -54,33 +55,45 @@ namespace WebApi.MVCControllers
         [HttpPost]
         public ActionResult CreateRecipient(RecipientViewModel recipient)
         {
-            if (recipient.RecipientCountryId == null)
+            PopulateList();
+            if (CheckIfDuplicatedId(recipient))
+                return RedirectToAction("CreateRecipient");
+            try
             {
-                PopulateList();
-                recipient.CountryList =Recipient.CountryList;
-                return View(recipient);
-            }
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-                var postTask = client.PostAsJsonAsync<RecipientViewModel>("api/recipient", recipient);
-                postTask.Wait();
-
-                var result = postTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Recipient " + recipient.RecipientId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
+                        var postTask = client.PostAsJsonAsync<RecipientViewModel>("api/recipient", recipient);
+                        postTask.Wait();
 
-                    return RedirectToAction("RecipientIndex");
+                        var result = postTask.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            logger.Info(Environment.NewLine + "Recipient " + recipient.RecipientId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+
+                            return RedirectToAction("RecipientIndex");
+                        }
+                    }
                 }
             }
-            PopulateList();
-            ModelState.AddModelError(string.Empty, "Cannot create recipient");
+            catch (DataException)
+            {
+                ModelState.AddModelError(string.Empty, "Cannot create recipient");
 
-
+            }
             return View(recipient);
         }
-
+        private bool CheckIfDuplicatedId(RecipientViewModel recipient)
+        {
+            if (Recipients.Where(c => c.RecipientId.Equals(recipient.RecipientId, StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
+            {
+                TempData["error"] = "Cannot create. ID must be unique.";
+                return true;
+            }
+            return false;
+        }
         private void PopulateList()
         {
             List<CountryViewModel> countries = new List<CountryViewModel>();
@@ -105,6 +118,7 @@ namespace WebApi.MVCControllers
             PopulateList();
             IEnumerable<RecipientViewModel> Recipients = null;
             id=id.Trim();
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
@@ -130,21 +144,31 @@ namespace WebApi.MVCControllers
         public ActionResult EditRecipient(RecipientViewModel recipient)
         {
             recipient.CountryList = Recipient.CountryList;
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-
-
-                var putTask = client.PutAsJsonAsync<RecipientViewModel>("api/Recipient", recipient);
-                putTask.Wait();
-
-                var result = putTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Recipient " + recipient.RecipientId+ " editted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
-                    return RedirectToAction("RecipientIndex");
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
+
+
+                        var putTask = client.PutAsJsonAsync<RecipientViewModel>("api/Recipient", recipient);
+                        putTask.Wait();
+
+                        var result = putTask.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            logger.Info(Environment.NewLine + "Recipient " + recipient.RecipientId + " editted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+                            return RedirectToAction("RecipientIndex");
+                        }
+                    }
                 }
+            }catch(DataException)
+            {
+
             }
+
             PopulateList();
             return View(recipient);
         }

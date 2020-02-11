@@ -1,6 +1,7 @@
 ﻿using NLog;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Web;
@@ -13,7 +14,7 @@ namespace WebApi.MVCControllers
     public class CountryController : Controller
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
-        IEnumerable<CountryViewModel> Countries;       
+       static IEnumerable<CountryViewModel> Countries;       
         public ActionResult CountryIndex()
         {
 
@@ -51,24 +52,44 @@ namespace WebApi.MVCControllers
         [HttpPost]
         public ActionResult CreateCountry(CountryViewModel country)
         {
-            using (var client = new HttpClient())
+            if(CheckIfDuplicatedId(country))
+            return RedirectToAction("CreateCountry");
+            try
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-                var postTask = client.PostAsJsonAsync<CountryViewModel>("api/country", country);
-                postTask.Wait();
-
-                var result = postTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Country" + country.CountryId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
-                    return RedirectToAction("CountryIndex");
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
+                        var postTask = client.PostAsJsonAsync<CountryViewModel>("api/country", country);
+                        postTask.Wait();
+
+                        var result = postTask.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            logger.Info(Environment.NewLine + "Country" + country.CountryId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+                            return RedirectToAction("CountryIndex");
+                        }
+                    }
                 }
+            }
+            catch (DataException)
+            {
+                ModelState.AddModelError(string.Empty, "Server Error.");
             }
 
             ModelState.AddModelError(string.Empty, "Cannot create country");
-
-
             return View(country);
+        }
+
+        private bool CheckIfDuplicatedId(CountryViewModel country)
+        {
+            if (Countries.Where(c => c.CountryId.Equals(country.CountryId, StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
+            {
+                TempData["error"] = "Cannot create. ID must be unique.";
+                return true;                
+            }
+            return false;
         }
         public ActionResult EditCountry(string id)
         {
@@ -97,20 +118,29 @@ namespace WebApi.MVCControllers
         [HttpPost]
         public ActionResult EditCountry(CountryViewModel country)
         {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-
-
-                var putTask = client.PutAsJsonAsync<CountryViewModel>("api/country", country);
-                putTask.Wait();
-
-                var result = putTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Country" + country.CountryId.ToString() + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
-                    return RedirectToAction("CountryIndex");
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
+
+
+                        var putTask = client.PutAsJsonAsync<CountryViewModel>("api/country", country);
+                        putTask.Wait();
+
+                        var result = putTask.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            logger.Info(Environment.NewLine + "Country" + country.CountryId.ToString() + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+                            return RedirectToAction("CountryIndex");
+                        }
+                    }
                 }
+            }catch(DataException)
+            {
+
             }
             return View(country);
         }

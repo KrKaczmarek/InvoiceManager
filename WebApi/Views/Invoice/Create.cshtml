@@ -1,4 +1,4 @@
-﻿@model WebApi.Models.CreateViewModel
+﻿@model WebApi.Models.InvoiceViewModel
 
 @{
     ViewBag.Title = "Create";
@@ -17,62 +17,62 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.Invoice.InvoiceId, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.InvoiceId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.Invoice.InvoiceId, new {  @readonly = "readonly" })
-                @Html.ValidationMessageFor(model => model.Invoice.InvoiceId, "", new { @class = "text-danger" })
+                @Html.TextBoxFor(model => model.InvoiceId, new {  @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.InvoiceId, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Invoice.Recipient.RecipientName, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Recipient.RecipientName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(m => m.Invoice.RecipientId, Model.RecipientList, "--Select--", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Invoice.RecipientId, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(m => m.RecipientId, Model.RecipientList, "--Select--", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.RecipientId, "", new { @class = "text-danger" })
 
 
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Invoice.Supplier.SupplierName, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Supplier.SupplierName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(m => m.Invoice.SupplierId, Model.SupplierList, "--Select--", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Invoice.SupplierId, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(m => m.SupplierId, Model.SupplierList, "--Select--", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Invoice.Employee.EmployeeName, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Employee.EmployeeName, htmlAttributes: new { @class = "control-label col-md-2" })
           
             <div class="col-md-10">
-                @Html.DropDownListFor(m => m.Invoice.EmployeeId, Model.EmployeeList, "--Select--", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Invoice.EmployeeId, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(m => m.EmployeeId, Model.EmployeeList, "--Select--", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Invoice.Duck.DuckType, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Duck.DuckType, htmlAttributes: new { @class = "control-label col-md-2" })
          
             <div class="col-md-10">
-            @Html.DropDownListFor(m => m.Invoice.DuckId, Model.DuckList, "--Select--", new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Invoice.DuckId, "", new { @class = "text-danger" })
+            @Html.DropDownListFor(m => m.DuckId, Model.DuckList, "--Select--", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.DuckId, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Invoice.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Invoice.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Invoice.Quantity, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Invoice.Date, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.Invoice.Date, new { disabled = "disabled", @readonly = "readonly" })
-                @Html.ValidationMessageFor(model => model.Invoice.Date, "", new { @class = "text-danger" })
+                @Html.TextBoxFor(model => model.Date, new { disabled = "disabled", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
             </div>
         </div>
 

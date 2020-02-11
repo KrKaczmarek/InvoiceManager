@@ -1,75 +1,75 @@
-﻿using NLog;
+﻿using AutoMapper;
+using NLog;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Web;
 using System.Web.Mvc;
 using WebApi.Models;
+using WebApi.Repository;
 
 namespace WebApi.MVCControllers
 {
     [MyAuthorization("Admin", "Pracownik")]
     public class InvoiceController : Controller
     {
-        private Logger logger = LogManager.GetCurrentClassLogger();
-        IEnumerable<InvoiceViewModel> Invoices { get; set; }
+      
+        IEnumerable<Faktury> Invoices { get; set; }
 
-        CreateViewModel create = new CreateViewModel();
+        UnitOfWork unitOfWork = new UnitOfWork();
+        InvoiceViewModel invoiceToEdit = new InvoiceViewModel();
+        private static int NextInvoiceIndex;
         public ActionResult Index(string searchString = "", string Answer = "")
         {
 
-            using (var client = new HttpClient())
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
+
+            if (!String.IsNullOrEmpty(searchString))
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-                var responseTask = client.GetAsync("api/Invoice");
-                responseTask.Wait();
-
-
-
-                var result = responseTask.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsAsync<IList<InvoiceViewModel>>();
-                    readTask.Wait();
-                    Invoices = readTask.Result;
-
-
-                }
-                else
-                {
-                    Invoices = Enumerable.Empty<InvoiceViewModel>();
-                    ModelState.AddModelError(string.Empty, "Server error");
-                }
-                if (!String.IsNullOrEmpty(searchString))
-                {
-                    if (Answer == "EmployeeName")
-                        Invoices = Invoices.Where(s => s.Employee.EmployeeName.Contains(searchString));
-                    if (Answer == "DuckType")
-                        Invoices = Invoices.Where(s => s.Duck.DuckType.Contains(searchString));
-                    if (Answer == "SupplierName")
-                        Invoices = Invoices.Where(s => s.Supplier.SupplierName.Contains(searchString));
-                    if (Answer == "RecipientName")
-                        Invoices = Invoices.Where(s => s.Recipient.RecipientName.Contains(searchString));
-                }
+                if (Answer == "EmployeeName")
+                    Invoices = unitOfWork.InvoiceRepository.Get(s => s.Pracownicy.Imie.Contains(searchString));
+                if (Answer == "DuckType")
+                    Invoices = unitOfWork.InvoiceRepository.Get(s => s.Kaczki.Rodzaj.Contains(searchString));
+                if (Answer == "SupplierName")
+                    Invoices = unitOfWork.InvoiceRepository.Get(s => s.Dostawcy.Dostawca_nazwa.Contains(searchString));
+                if (Answer == "RecipientName")
+                    Invoices = unitOfWork.InvoiceRepository.Get(s => s.Odbiorcy.Odbiorca_nazwa.Contains(searchString));
+            }
+            else
+            {
+                Invoices = unitOfWork.InvoiceRepository.Get(includeProperties: "");
             }
 
+            var inv = mapper.Map<IEnumerable<InvoiceViewModel>>(Invoices);
 
-            return View(Invoices);
+
+            foreach (var i in inv) // add employee,recipient,supplier,duck data to invoice
+            {
+                i.Employee = mapper.Map<EmployeeViewModel>(unitOfWork.EmployeeRepository.GetByID(i.EmployeeId));
+                i.Recipient = mapper.Map<RecipientViewModel>(unitOfWork.RecipientRepository.GetByID(i.RecipientId));
+                i.Supplier = mapper.Map<SupplierViewModel>(unitOfWork.SupplierRepository.GetByID(i.SupplierId));
+                i.Duck = mapper.Map<DuckViewModel>(unitOfWork.DuckRepository.GetByID(i.DuckId));
+            }
+            NextInvoiceIndex = inv.Last().InvoiceId + 1;
+            return View(inv.ToList());
+
 
         }
 
         public ActionResult Create()
         {
-            create.Invoice = new InvoiceViewModel();
-            create.Invoice.InvoiceId = WebApi.Controllers.InvoiceController.NextInvoiceIndex;
-            create.Invoice.Date = DateTime.Now;
-            PopulateList();
-            return View(create);
+            invoiceToEdit = new InvoiceViewModel();
+            invoiceToEdit.InvoiceId = NextInvoiceIndex;
+            invoiceToEdit.Date = DateTime.Now;
+            PopulateDropDownList();
+            return View(invoiceToEdit);
 
         }
 
-        public void PopulateList()
+        public void PopulateDropDownList()
         {
             List<EmployeeViewModel> employees = new List<EmployeeViewModel>();
             List<DuckViewModel> ducks = new List<DuckViewModel>();
@@ -123,111 +123,95 @@ namespace WebApi.MVCControllers
 
                     ModelState.AddModelError(string.Empty, "Server error");
                 }
-                create.EmployeeList = new SelectList(employees, "EmployeeId", "EmployeeName");
-                create.DuckList = new SelectList(ducks, "DuckId", "DuckType");
-                create.RecipientList = new SelectList(recipients, "RecipientId", "RecipientName");
-                create.SupplierList = new SelectList(suppliers, "SupplierId", "SupplierName");
+                invoiceToEdit.EmployeeList = new SelectList(employees, "EmployeeId", "EmployeeName");
+                invoiceToEdit.DuckList = new SelectList(ducks, "DuckId", "DuckType");
+                invoiceToEdit.RecipientList = new SelectList(recipients, "RecipientId", "RecipientName");
+                invoiceToEdit.SupplierList = new SelectList(suppliers, "SupplierId", "SupplierName");
             }
         }
 
         [HttpPost]
-        public ActionResult Create(CreateViewModel create)
+        public ActionResult Create(InvoiceViewModel create)
         {
-
-            this.create = create;
-            using (var client = new HttpClient())
+            this.invoiceToEdit =create;
+                     
+            PopulateDropDownList();
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
+            invoiceToEdit.Date = DateTime.Now;
+            try
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-                var postTask = client.PostAsJsonAsync("api/invoice", create.Invoice);
-                postTask.Wait();
-
-                var result = postTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine+ "Invoice "+ create.Invoice.InvoiceId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+                    unitOfWork.InvoiceRepository.Insert(mapper.Map<Faktury>(invoiceToEdit));
+                    unitOfWork.Save();
                     return RedirectToAction("Index");
+                  
                 }
-
-
             }
-            PopulateList();
-            ModelState.AddModelError(string.Empty, "Server Error.");
-       
+            catch (DataException)
+            {
+                ModelState.AddModelError(string.Empty, "Server Error.");
+            
+            }
 
-            return View(create);
+            return View(invoiceToEdit);
+
         }
+
 
 
         public ActionResult Edit(int id)
         {
-            IEnumerable<InvoiceViewModel> invoice = null;
-            PopulateList();
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
 
-                var responseTask = client.GetAsync("api/invoice?id=" + id.ToString());
-                responseTask.Wait();
 
-                var result = responseTask.Result;
+            var courses = unitOfWork.InvoiceRepository.GetByID(id);
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
 
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsAsync<IList<InvoiceViewModel>>();
-                    readTask.Wait();
 
-                    invoice = readTask.Result;
-                }
-            }
-            create.Invoice = invoice.SingleOrDefault();
 
-            return View(create);
+            invoiceToEdit = mapper.Map<InvoiceViewModel>(courses);
+            PopulateDropDownList();
+            return View(invoiceToEdit);
+
         }
 
 
 
         [HttpPost]
-        public ActionResult Edit(CreateViewModel create)
+        public ActionResult Edit(InvoiceViewModel invoiceToEdit)
         {
-
-            using (var client = new HttpClient())
+            PopulateDropDownList();
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
+            try
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-
-
-                var putTask = client.PutAsJsonAsync<InvoiceViewModel>("api/invoice", create.Invoice);
-                putTask.Wait();
-
-                var result = putTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Invoice " + create.Invoice.InvoiceId.ToString() + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
-
+                    unitOfWork.InvoiceRepository.Update(mapper.Map<Faktury>(invoiceToEdit));
+                    unitOfWork.Save();
+                    //TODO: logger
                     return RedirectToAction("Index");
                 }
             }
-            PopulateList();
-            return View(create);
+            catch (DataException)
+            {
+                //TODO: logger
+            }
+
+
+            return View(invoiceToEdit);
+            
+
         }
 
         public ActionResult Delete(int id)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-
-
-                var deleteTask = client.DeleteAsync("api/invoice/" + id.ToString());
-                deleteTask.Wait();
-
-                var result = deleteTask.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    logger.Info(Environment.NewLine + "Invoice " + id.ToString() + " deleted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
-
-                    return RedirectToAction("Index");
-                }
-            }
+        {          
+       
+            unitOfWork.InvoiceRepository.Delete(id);
+            unitOfWork.Save();
+            //TODO: logger
 
             return RedirectToAction("Index");
         }

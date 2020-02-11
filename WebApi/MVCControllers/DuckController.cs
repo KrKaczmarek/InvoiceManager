@@ -1,11 +1,14 @@
-﻿using NLog;
+﻿using AutoMapper;
+using NLog;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Web;
 using System.Web.Mvc;
 using WebApi.Models;
+using WebApi.Repository;
 
 namespace WebApi.MVCControllers
 {
@@ -13,37 +16,21 @@ namespace WebApi.MVCControllers
     public class DuckController : Controller
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
-        IEnumerable<DuckViewModel> Ducks;
+
         DuckViewModel Duck = new DuckViewModel();
+        UnitOfWork unitOfWork = new UnitOfWork();
+        private static int NextDuckIndex;
         public ActionResult DuckIndex()
         {
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
 
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-                var responseTask = client.GetAsync("api/Duck");
-                responseTask.Wait();
+            var ducks = unitOfWork.DuckRepository.Get(includeProperties: "");
+            NextDuckIndex = ducks.Last().Kaczka_id + 1;
+            return View(mapper.Map<List<DuckViewModel>>(ducks));
 
-
-
-                var result = responseTask.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsAsync<IList<DuckViewModel>>();
-                    readTask.Wait();
-                    Ducks = readTask.Result;
-
-
-                }
-                else
-                {
-                    Ducks = Enumerable.Empty<DuckViewModel>();
-                    ModelState.AddModelError(string.Empty, "No ducks in db");
-                }
-                ViewData["error"] = TempData["error"];
-                return View(Ducks);
-            }
         }
+
         private void PopulateList()
         {
             List<CountryViewModel> countries = new List<CountryViewModel>();
@@ -61,91 +48,73 @@ namespace WebApi.MVCControllers
                     countries = readTask.Result.ToList();
                 }
             }
-           Duck.CountryList = new SelectList(countries, "CountryId", "CountryName");
-            Duck.DuckId = WebApi.Controllers.DuckController.NextDuckIndex;
+            Duck.CountryList = new SelectList(countries, "CountryId", "CountryName");           
         }
         public ActionResult CreateDuck()
         {
             PopulateList();
+            Duck.DuckId = NextDuckIndex;
             return View(Duck);
         }
-        
+
         [HttpPost]
         public ActionResult CreateDuck(DuckViewModel duck)
         {
-            if (duck.DuckCountryId == null)
-            {
-                PopulateList();
-                duck.CountryList = Duck.CountryList; 
-                return View(duck);
-            }
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-                var postTask = client.PostAsJsonAsync<DuckViewModel>("api/duck", duck);
-                postTask.Wait();
+            PopulateList();
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
 
-                var result = postTask.Result;
-                if (result.IsSuccessStatusCode)
+            try
+            {
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Duck" + duck.DuckId.ToString() + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
-
+                    unitOfWork.DuckRepository.Insert(mapper.Map<Kaczki>(duck));
+                    unitOfWork.Save();
                     return RedirectToAction("DuckIndex");
+                    //TODO:logger }
                 }
             }
-            PopulateList();
+            catch (DataException) { }
+
+
             ModelState.AddModelError(string.Empty, "Cannot create duck");
-
-
-            return View(duck);
+            return View(Duck);
         }
         public ActionResult EditDuck(int id)
         {
+                  
+
+            var ducks = unitOfWork.DuckRepository.GetByID(id);
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
+
+
+            Duck = mapper.Map<DuckViewModel>(ducks);
             PopulateList();
-            IEnumerable<DuckViewModel> Ducks = null;
-
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-
-                var responseTask = client.GetAsync("api/duck?id=" + id.ToString());
-                responseTask.Wait();
-
-                var result = responseTask.Result;
-
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsAsync<IList<DuckViewModel>>();
-                    readTask.Wait();
-
-                    Ducks = readTask.Result;
-                }
-            }
-            Ducks.SingleOrDefault().CountryList = Duck.CountryList;
-            return View(Ducks.SingleOrDefault());
+            return View(Duck);
         }
 
         [HttpPost]
         public ActionResult EditDuck(DuckViewModel duck)
         {
-         
+            PopulateList();
             duck.CountryList = Duck.CountryList;
-       
-            using (var client = new HttpClient())
+            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MapperProfile()));
+            var mapper = config.CreateMapper();
+            try
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-
-
-                var putTask = client.PutAsJsonAsync<DuckViewModel>("api/duck", duck);
-                putTask.Wait();
-
-                var result = putTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Duck" + duck.DuckId.ToString() + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
-
+                    unitOfWork.DuckRepository.Update(mapper.Map<Kaczki>(duck));
+                    unitOfWork.Save();
+                    //TODO: logger
                     return RedirectToAction("DuckIndex");
+
                 }
+            }
+            catch (DataException)
+            {
+
             }
             PopulateList();
             return View(duck);
