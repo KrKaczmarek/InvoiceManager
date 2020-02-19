@@ -53,7 +53,7 @@ namespace WebApi.MVCControllers
         public ActionResult CreateCountry(CountryViewModel country)
         {
             if(CheckIfDuplicatedId(country))
-            return RedirectToAction("CreateCountry");
+            return RedirectToAction("CountryIndex");
             try
             {
                 if (ModelState.IsValid)
@@ -84,7 +84,7 @@ namespace WebApi.MVCControllers
 
         private bool CheckIfDuplicatedId(CountryViewModel country)
         {
-            if (Countries.Where(c => c.CountryId.Equals(country.CountryId, StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
+            if (Countries.Where(c => c.CountryId.Trim().Equals(country.CountryId.Trim(), StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
             {
                 TempData["error"] = "Cannot create. ID must be unique.";
                 return true;                

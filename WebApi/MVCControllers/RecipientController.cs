@@ -57,7 +57,7 @@ namespace WebApi.MVCControllers
         {
             PopulateList();
             if (CheckIfDuplicatedId(recipient))
-                return RedirectToAction("CreateRecipient");
+                return RedirectToAction("RecipientIndex");
             try
             {
                 if (ModelState.IsValid)
@@ -83,11 +83,12 @@ namespace WebApi.MVCControllers
                 ModelState.AddModelError(string.Empty, "Cannot create recipient");
 
             }
+            PopulateList();
             return View(recipient);
         }
         private bool CheckIfDuplicatedId(RecipientViewModel recipient)
         {
-            if (Recipients.Where(c => c.RecipientId.Equals(recipient.RecipientId, StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
+            if (Recipients.Where(c => c.RecipientId.Trim().Equals(recipient.RecipientId.Trim(), StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
             {
                 TempData["error"] = "Cannot create. ID must be unique.";
                 return true;

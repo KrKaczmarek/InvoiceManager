@@ -212,6 +212,8 @@
     <Compile Include="Models\MyAuthorizationAttribute.cs" />
     <Compile Include="Models\RecipientViewModel.cs" />
     <Compile Include="Models\SupplierViewModel.cs" />
+    <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\IUnitOfWork.cs" />
     <Compile Include="Repository\UnitOfWork.cs" />
     <Compile Include="Models\UserLoginViewModel.cs" />
     <Compile Include="MVCControllers\CountryController.cs" />

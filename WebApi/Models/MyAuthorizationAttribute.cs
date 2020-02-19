@@ -20,17 +20,15 @@ namespace WebApi.Models
 
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-            bool authorize = false;
-            string[] cookieData;
-            HttpCookie cookie = HttpContext.Current.Request.Cookies["LoginCookie"];
+            bool authorize = false;          
+            string role = CookieHandler.GetUserRoleFromCookie("LoginCookie");
             
-            if (cookie != null)
+            if (role != null)
             {
-                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
-                cookieData = authTicket.UserData.Split(' ');
+               
                 foreach(var i in allowedRoles)
                 {
-                    if (i == cookieData[1])
+                    if (i == role)
                         authorize= true;
                 }
                

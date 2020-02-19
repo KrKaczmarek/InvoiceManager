@@ -9,12 +9,12 @@ using WebApi.Models;
 
 namespace WebApi.Repository
 {
-    public class GenericRepository<TEntity> where TEntity:class
+    public class GenericRepository<TEntity>:IRepository<TEntity> where TEntity:class
     {
-        internal SklepEntities context;
+        internal DbContext context;
         internal DbSet<TEntity> dbSet;
         private Logger logger = LogManager.GetCurrentClassLogger();
-        public GenericRepository(SklepEntities context)
+        public GenericRepository(DbContext context)
         {
             this.context = context;
             this.dbSet = context.Set<TEntity>();
@@ -56,7 +56,7 @@ namespace WebApi.Repository
         public virtual void Insert(TEntity entity)
         {
             dbSet.Add(entity);
-            logger.Info(Environment.NewLine + entity.GetType().Name + " ID: " + GetPropValue(entity, entity.GetType().GetProperties()[0].Name) + " editted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+            logger.Info(Environment.NewLine + entity.GetType().Name + " ID: " + GetPropValue(entity, entity.GetType().GetProperties()[0].Name) + " added by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
 
         }
         private static object GetPropValue(object src, string propName)
@@ -66,7 +66,7 @@ namespace WebApi.Repository
         public virtual void Delete(object id)
         {
             TEntity entityToDelete = dbSet.Find(id);
-            logger.Info(Environment.NewLine + entityToDelete.GetType().Name + " ID: " + GetPropValue(entityToDelete, entityToDelete.GetType().GetProperties()[0].Name) + " editted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+            logger.Info(Environment.NewLine + entityToDelete.GetType().Name + " ID: " + GetPropValue(entityToDelete, entityToDelete.GetType().GetProperties()[0].Name) + " deleted by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
 
             Delete(entityToDelete);
         }

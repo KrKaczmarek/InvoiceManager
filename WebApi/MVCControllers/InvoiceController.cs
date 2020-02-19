@@ -191,13 +191,13 @@ namespace WebApi.MVCControllers
                 {
                     unitOfWork.InvoiceRepository.Update(mapper.Map<Faktury>(invoiceToEdit));
                     unitOfWork.Save();
-                    //TODO: logger
+                   
                     return RedirectToAction("Index");
                 }
             }
             catch (DataException)
             {
-                //TODO: logger
+                
             }
 
 
@@ -211,7 +211,7 @@ namespace WebApi.MVCControllers
        
             unitOfWork.InvoiceRepository.Delete(id);
             unitOfWork.Save();
-            //TODO: logger
+            
 
             return RedirectToAction("Index");
         }

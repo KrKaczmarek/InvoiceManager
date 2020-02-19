@@ -72,9 +72,9 @@ namespace WebApi.MVCControllers
         [HttpPost]
         public ActionResult CreateSupplier(SupplierViewModel supplier)
         {
-            PopulateList();         
+            PopulateList();
             if (CheckIfDuplicatedId(supplier))
-                return RedirectToAction("CreateSupplier");
+                return RedirectToAction("SupplierIndex");
             try
             {
                 if (ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace WebApi.MVCControllers
         }
         private bool CheckIfDuplicatedId(SupplierViewModel supplier)
         {
-            if (Suppliers.Where(c => c.SupplierId.Equals(supplier.SupplierId, StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
+            if (Suppliers.Where(c => c.SupplierId.Trim().Equals(supplier.SupplierId.Trim(), StringComparison.OrdinalIgnoreCase)).SingleOrDefault() != null)
             {
                 TempData["error"] = "Cannot create. ID must be unique.";
                 return true;
@@ -115,30 +115,25 @@ namespace WebApi.MVCControllers
         {
             IEnumerable<SupplierViewModel> Suppliers = null;
             PopulateList();
-            try
+
+            using (var client = new HttpClient())
             {
-                if (ModelState.IsValid)
+                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
+
+                var responseTask = client.GetAsync("api/supplier?id=" + id);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+
+                if (result.IsSuccessStatusCode)
                 {
-                    using (var client = new HttpClient())
-                    {
-                        client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
+                    var readTask = result.Content.ReadAsAsync<IList<SupplierViewModel>>();
+                    readTask.Wait();
 
-                        var responseTask = client.GetAsync("api/supplier?id=" + id);
-                        responseTask.Wait();
-
-                        var result = responseTask.Result;
-
-                        if (result.IsSuccessStatusCode)
-                        {
-                            var readTask = result.Content.ReadAsAsync<IList<SupplierViewModel>>();
-                            readTask.Wait();
-
-                            Suppliers = readTask.Result;
-                        }
-                    }
+                    Suppliers = readTask.Result;
                 }
             }
-            catch (DataException) {  }
+
             Suppliers.SingleOrDefault().CountryList = Supplier.CountryList;
             return View(Suppliers.SingleOrDefault());
         }
@@ -146,23 +141,30 @@ namespace WebApi.MVCControllers
         [HttpPost]
         public ActionResult EditSupplier(SupplierViewModel supplier)
         {
-            supplier.CountryList = Supplier.CountryList;
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
-
-
-                var putTask = client.PutAsJsonAsync<SupplierViewModel>("api/Supplier", supplier);
-                putTask.Wait();
-
-                var result = putTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    logger.Info(Environment.NewLine + "Recipient " + supplier.SupplierId + " idited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+                    supplier.CountryList = Supplier.CountryList;
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(Request.Url.GetLeftPart(UriPartial.Authority));
 
-                    return RedirectToAction("SupplierIndex");
+
+                        var putTask = client.PutAsJsonAsync<SupplierViewModel>("api/Supplier", supplier);
+                        putTask.Wait();
+
+                        var result = putTask.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            logger.Info(Environment.NewLine + "Supplier " + supplier.SupplierId + " edited by " + CookieHandler.GetUserNameFromCookie("LoginCookie") + " " + DateTime.Now);
+
+                            return RedirectToAction("SupplierIndex");
+                        }
+                    }
                 }
             }
+            catch (DataException) { }
             PopulateList();
             return View(supplier);
         }
